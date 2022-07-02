@@ -70,6 +70,7 @@ func main() {
 	apis := r.Group("/api")
 	{
 		apis.GET("/songs", routers.ListSongs(client))
+		apis.PUT("/songs/:id", routers.UpdateSong(client))
 		apis.POST("/songs", middlewares.Secure(), routers.CreateSong(client))
 	}
 
