@@ -44,8 +44,8 @@ type SongIDURI struct {
 var searchFields = []string{"artist", "name"}
 
 func ListSongs(client *mongo.Client) func(ctx *gin.Context) {
+	log := logger.GetInstance()
 	return func(ctx *gin.Context) {
-		log := logger.GetInstance()
 		params := SongListParams{
 			Page:     1,
 			PageSize: 10,
@@ -104,6 +104,7 @@ func ListSongs(client *mongo.Client) func(ctx *gin.Context) {
 }
 
 func CreateSong(client *mongo.Client) func(ctx *gin.Context) {
+	col := client.Database("sldb").Collection("songs")
 	return func(ctx *gin.Context) {
 		body := CreateSongDto{
 			Genres: []string{},
@@ -114,8 +115,7 @@ func CreateSong(client *mongo.Client) func(ctx *gin.Context) {
 			return
 		}
 
-		songCol := client.Database("sldb").Collection("songs")
-		res, err := songCol.InsertOne(context.TODO(), Song{
+		res, err := col.InsertOne(context.TODO(), Song{
 			Name:   body.Name,
 			Artist: body.Artist,
 			Genres: body.Genres,
@@ -125,7 +125,7 @@ func CreateSong(client *mongo.Client) func(ctx *gin.Context) {
 			return
 		}
 
-		findRes := songCol.FindOne(context.TODO(), bson.M{"_id": res.InsertedID})
+		findRes := col.FindOne(context.TODO(), bson.M{"_id": res.InsertedID})
 		created := Song{}
 		err = findRes.Decode(&created)
 		if err != nil {
@@ -139,12 +139,12 @@ func CreateSong(client *mongo.Client) func(ctx *gin.Context) {
 
 func UpdateSong(client *mongo.Client) func(ctx *gin.Context) {
 	col := client.Database("sldb").Collection("songs")
+	log := logger.GetInstance()
 	return func(ctx *gin.Context) {
 		body := UpdateSongDto{
 			Genres: []string{},
 		}
 		uri := SongIDURI{}
-		log := logger.GetInstance()
 		if err := ctx.BindUri(&uri); err != nil {
 			log.Println(err)
 			ctx.AbortWithStatusJSON(400, gin.H{"message": err.Error()})
