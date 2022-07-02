@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -60,6 +61,9 @@ func main() {
 	fmt.Printf("%T\n", client)
 
 	r := gin.Default()
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"https://ddsonglist.netlify.app", "http://localhost:3000"}
+	r.Use(cors.New(corsConfig))
 	r.SetTrustedProxies(nil)
 	r.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{

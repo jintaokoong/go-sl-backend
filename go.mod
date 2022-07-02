@@ -9,6 +9,8 @@ require (
 	go.mongodb.org/mongo-driver v1.9.1
 )
 
+require github.com/gin-contrib/cors v1.3.1 // indirect
+
 require (
 	cloud.google.com/go v0.102.1 // indirect
 	cloud.google.com/go/compute v1.7.0 // indirect
