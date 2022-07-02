@@ -71,6 +71,7 @@ func main() {
 	{
 		apis.GET("/songs", routers.ListSongs(client))
 		apis.PUT("/songs/:id", routers.UpdateSong(client))
+		apis.DELETE("/songs/:id", routers.DeleteSong(client))
 		apis.POST("/songs", middlewares.Secure(), routers.CreateSong(client))
 	}
 

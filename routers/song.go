@@ -37,7 +37,7 @@ type UpdateSongDto struct {
 	Genres []string `json:"genres" binding:"dive,required"`
 }
 
-type UpdateSongURI struct {
+type SongIDURI struct {
 	ID string `uri:"id"`
 }
 
@@ -143,7 +143,7 @@ func UpdateSong(client *mongo.Client) func(ctx *gin.Context) {
 		body := UpdateSongDto{
 			Genres: []string{},
 		}
-		uri := UpdateSongURI{}
+		uri := SongIDURI{}
 		log := logger.GetInstance()
 		if err := ctx.BindUri(&uri); err != nil {
 			log.Println(err)
@@ -169,6 +169,10 @@ func UpdateSong(client *mongo.Client) func(ctx *gin.Context) {
 			ReturnDocument: &after,
 		}
 		r := col.FindOneAndReplace(context.TODO(), bson.M{"_id": id}, body, &opt)
+		if r.Err() != nil {
+			ctx.AbortWithStatusJSON(404, gin.H{"message": "song not found"})
+			return
+		}
 
 		updated := Song{}
 		err = r.Decode(&updated)
@@ -178,5 +182,31 @@ func UpdateSong(client *mongo.Client) func(ctx *gin.Context) {
 		}
 
 		ctx.JSON(200, updated)
+	}
+}
+
+func DeleteSong(client *mongo.Client) func(ctx *gin.Context) {
+	col := client.Database("sldb").Collection("songs")
+	log := logger.GetInstance()
+	return func(ctx *gin.Context) {
+		uri := SongIDURI{}
+		if err := ctx.BindUri(&uri); err != nil {
+			log.Println(err)
+			ctx.AbortWithStatusJSON(400, gin.H{"message": err.Error()})
+			return
+		}
+		id, err := primitive.ObjectIDFromHex(uri.ID)
+		if err != nil {
+			ctx.AbortWithStatusJSON(500, gin.H{"message": "internal server error"})
+			return
+		}
+
+		r := col.FindOneAndDelete(context.TODO(), bson.M{"_id": id})
+		if r.Err() != nil {
+			ctx.AbortWithStatusJSON(404, gin.H{"message": "song not found"})
+			return
+		}
+
+		ctx.Status(200)
 	}
 }
