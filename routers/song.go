@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,13 +16,19 @@ type Song struct {
 	ID     primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
 	Name   string             `bson:"name,omitempty" json:"name"`
 	Artist string             `bson:"artist,omitempty" json:"artist"`
-	Genres []string           `bson:"genres,omitempty" json:"genres"`
+	Genres []string           `bson:"genres" json:"genres"`
 }
 
 type SongListParams struct {
 	Page     int64  `form:"page" binding:"gt=0"`
 	PageSize int64  `form:"pageSize" binding:"gt=0"`
 	Search   string `form:"search"`
+}
+
+type CreateSongDto struct {
+	Name   string   `json:"name" binding:"required"`
+	Artist string   `json:"artist" binding:"required"`
+	Genres []string `json:"genres" binding:"dive,required"`
 }
 
 var searchFields = []string{"artist", "name"}
@@ -83,5 +90,39 @@ func ListSongs(client *mongo.Client) func(ctx *gin.Context) {
 			"data":    songs,
 			"records": count,
 		})
+	}
+}
+
+func CreateSong(client *mongo.Client) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		body := CreateSongDto{
+			Genres: []string{},
+		}
+		if err := ctx.BindJSON(&body); err != nil {
+			logger.GetInstance().Println(err)
+			ctx.AbortWithStatusJSON(400, gin.H{"message": err.Error()})
+			return
+		}
+
+		songCol := client.Database("sldb").Collection("songs")
+		res, err := songCol.InsertOne(context.TODO(), Song{
+			Name:   body.Name,
+			Artist: body.Artist,
+			Genres: body.Genres,
+		})
+		if err != nil {
+			ctx.AbortWithStatusJSON(500, gin.H{"message": "Create song failed"})
+			return
+		}
+
+		findRes := songCol.FindOne(context.TODO(), bson.M{"_id": res.InsertedID})
+		created := Song{}
+		err = findRes.Decode(&created)
+		if err != nil {
+			ctx.AbortWithStatusJSON(203, gin.H{"_id": res.InsertedID})
+			return
+		}
+
+		ctx.JSON(200, created)
 	}
 }

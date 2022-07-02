@@ -70,9 +70,7 @@ func main() {
 	apis := r.Group("/api")
 	{
 		apis.GET("/songs", routers.ListSongs(client))
-		apis.GET("/secure", middlewares.Secure(), func(ctx *gin.Context) {
-			ctx.JSON(200, gin.H{"message": "hello world"})
-		})
+		apis.POST("/songs", middlewares.Secure(), routers.CreateSong(client))
 	}
 
 	r.Run()
