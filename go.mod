@@ -9,7 +9,7 @@ require (
 	go.mongodb.org/mongo-driver v1.9.1
 )
 
-require github.com/gin-contrib/cors v1.3.1 // indirect
+require github.com/gin-contrib/cors v1.3.1
 
 require (
 	cloud.google.com/go v0.102.1 // indirect
@@ -17,7 +17,7 @@ require (
 	cloud.google.com/go/firestore v1.6.1 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
 	cloud.google.com/go/storage v1.23.0 // indirect
-	firebase.google.com/go v3.13.0+incompatible // indirect
+	firebase.google.com/go v3.13.0+incompatible
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -54,7 +54,7 @@ require (
 	golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
-	google.golang.org/api v0.86.0 // indirect
+	google.golang.org/api v0.86.0
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f // indirect
 	google.golang.org/grpc v1.47.0 // indirect

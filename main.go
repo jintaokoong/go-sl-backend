@@ -62,6 +62,7 @@ func main() {
 
 	r := gin.Default()
 	corsConfig := cors.DefaultConfig()
+	corsConfig.AddAllowHeaders("Authorization")
 	corsConfig.AllowOrigins = []string{"https://ddsonglist.netlify.app", "http://localhost:3000"}
 	r.Use(cors.New(corsConfig))
 	r.SetTrustedProxies(nil)
