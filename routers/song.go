@@ -2,6 +2,7 @@ package routers
 
 import (
 	"context"
+	"math"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -97,8 +98,9 @@ func ListSongs(client *mongo.Client) func(ctx *gin.Context) {
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"data":    songs,
-			"records": count,
+			"data":       songs,
+			"records":    count,
+			"totalPages": math.Ceil(float64(count) / float64(params.PageSize)),
 		})
 	}
 }
