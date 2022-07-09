@@ -7,6 +7,7 @@ import (
 )
 
 type Configuration struct {
+	AllowOrigins    string `env:"ALLOW_ORIGINS"`
 	MongoUsername   string `env:"MONGO_USERNAME"`
 	MongoPassword   string `env:"MONGO_PASSWORD"`
 	MongoConnection string `env:"MONGO_CONN"`

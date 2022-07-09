@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -60,10 +61,12 @@ func main() {
 	defer client.Disconnect(ctx)
 	fmt.Printf("%T\n", client)
 
+	origins := strings.Split(cfg.AllowOrigins, ",")
+
 	r := gin.Default()
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AddAllowHeaders("Authorization")
-	corsConfig.AllowOrigins = []string{"https://ddsonglist.netlify.app", "http://localhost:3000"}
+	corsConfig.AllowOrigins = origins
 	r.Use(cors.New(corsConfig))
 	r.SetTrustedProxies(nil)
 	r.GET("/", func(ctx *gin.Context) {
