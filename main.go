@@ -78,8 +78,8 @@ func main() {
 	apis := r.Group("/api")
 	{
 		apis.GET("/songs", routers.ListSongs(client))
-		apis.PUT("/songs/:id", routers.UpdateSong(client))
-		apis.DELETE("/songs/:id", routers.DeleteSong(client))
+		apis.PUT("/songs/:id", middlewares.Secure(), routers.UpdateSong(client))
+		apis.DELETE("/songs/:id", middlewares.Secure(), routers.DeleteSong(client))
 		apis.POST("/songs", middlewares.Secure(), routers.CreateSong(client))
 	}
 
